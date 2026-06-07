@@ -37,7 +37,7 @@ export default function MemoryTimeline({ timeline }: MemoryTimelineProps) {
                   {item.imageUrl && (
                     <div className="relative h-44 rounded-xl overflow-hidden mb-4 shadow bg-slate-950/60 flex items-center justify-center">
                       <img 
-                        src={item.imageUrl} 
+                        src={item.imageUrl || undefined} 
                         alt={item.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         referrerPolicy="no-referrer"

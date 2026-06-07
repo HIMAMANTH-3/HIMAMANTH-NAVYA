@@ -51,7 +51,7 @@ export default function PhotoGallery({ gallery }: PhotoGalleryProps) {
             >
               <div className="relative aspect-square overflow-hidden bg-slate-900/40 rounded-2xl mb-4">
                 <img
-                  src={item.url}
+                  src={item.url || undefined}
                   alt={item.caption || "Special memory"}
                   className="w-full h-full object-cover grayscale-[10%] hover:grayscale-0 transition-all duration-500"
                   referrerPolicy="no-referrer"
@@ -98,7 +98,7 @@ export default function PhotoGallery({ gallery }: PhotoGalleryProps) {
             className="relative max-w-4xl max-h-[85vh] flex flex-col items-center bg-[#120a22] p-3 md:p-4 rounded-3xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300"
           >
             <img
-              src={gallery[activePhotoIdx].url}
+              src={gallery[activePhotoIdx].url || undefined}
               alt={gallery[activePhotoIdx].caption}
               className="max-h-[68vh] md:max-h-[72vh] max-w-full object-contain rounded-2xl"
               referrerPolicy="no-referrer"

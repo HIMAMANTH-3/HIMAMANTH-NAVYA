@@ -117,7 +117,7 @@ export default function BackgroundMusicPlayer({
       {/* Real audio driver element */}
       <audio 
         ref={audioRef}
-        src={spotifyTrackId ? '' : trackUrl}
+        src={spotifyTrackId ? undefined : (trackUrl || undefined)}
         preload="auto"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
