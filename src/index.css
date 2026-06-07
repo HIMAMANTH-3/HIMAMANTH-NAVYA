@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-handwritten: "Covered By Your Grace", cursive;
+  --font-elegant: "Great Vibes", cursive;
+}
+
+/* Custom cursors, particles and custom layout tweaks */
+body {
+  font-family: var(--font-sans);
+  background-color: #0b0713;
+  color: #f3f4f6;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #d946ef #1e1b4b;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0a1d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ec4899, #8b5cf6);
+  border-radius: 9999px;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-pink {
+  background: rgba(236, 72, 153, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(236, 72, 153, 0.15);
+}
+
+.glass-panel-purple {
+  background: rgba(139, 92, 246, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+/* Custom cursor and sparkle effects */
+.romantic-cursor {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(244, 63, 94, 0.4);
+  position: fixed;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  transition: width 0.2s, height 0.2s, background-color 0.2s;
+}
+
+/* Typewriter animation support */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+  color: #f43f5e;
+  font-weight: bold;
+}
+
+/* Background floating heart animations */
+@keyframes heartFloat {
+  0% {
+    transform: translateY(110vh) translateX(0) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(var(--float-x, 100px)) scale(var(--float-scale, 1)) rotate(var(--float-rotate, 360deg));
+    opacity: 0;
+  }
+}
+
+.floating-heart {
+  position: absolute;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  animation: heartFloat var(--float-duration, 15s) linear infinite;
+  color: var(--heart-color, rgba(236, 72, 153, 0.18));
+}
+
+/* Text glow */
+.text-glow-pink {
+  text-shadow: 0 0 10px rgba(236, 72, 153, 0.5), 0 0 20px rgba(236, 72, 153, 0.2);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+/* Love timeline custom stem */
+.timeline-line {
+  background: linear-gradient(to bottom, #ec4899, #8b5cf6, #ec4899);
+}
+
+/* Sparkle shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-btn {
+  background: linear-gradient(120deg, #ec4899 30%, #f472b6 40%, #ec4899 50%, #8b5cf6 80%);
+  background-size: 200% auto;
+  animation: shimmer 4s linear infinite;
+}
+
+.card-flip-inner {
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.card-flip:hover .card-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
+
+.card-front {
+  backface-visibility: hidden;
+}
