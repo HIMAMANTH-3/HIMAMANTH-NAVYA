@@ -54,13 +54,15 @@ interface LiveCustomizerProps {
   onChange: (newData: BirthdayWebsiteData) => void;
   onPreviewToggle: () => void;
   isPreviewMode: boolean;
+  onResetToDefault?: () => void;
 }
 
 export default function LiveCustomizer({ 
   data, 
   onChange, 
   onPreviewToggle, 
-  isPreviewMode 
+  isPreviewMode,
+  onResetToDefault
 }: LiveCustomizerProps) {
   const [activeTab, setActiveTab] = useState<'profile' | 'ai-writer' | 'gallery' | 'timeline' | 'reasons' | 'surprise'>('profile');
   const [imageLoadingMap, setImageLoadingMap] = useState<Record<string, boolean>>({});
@@ -254,20 +256,36 @@ export default function LiveCustomizer({
     <div className="w-full lg:w-[420px] bg-[#110e20] border-r border-slate-800/80 shrink-0 h-full flex flex-col z-40 select-none">
       
       {/* Sidebar Header */}
-      <div className="p-5 border-b border-slate-800/80 bg-black/30 flex items-center justify-between">
+      <div className="p-5 border-b border-slate-800/80 bg-black/30 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="flex items-center gap-2">
           <Heart className="w-5 h-5 text-pink-500 fill-pink-500 animate-pulse" />
           <h1 className="font-serif text-lg font-bold text-pink-100 tracking-tight">Surprise Designer</h1>
         </div>
 
-        {/* Toggle full screen visualizer preview */}
-        <button
-          onClick={onPreviewToggle}
-          className="text-xs px-3 py-1.5 rounded-lg font-semibold border border-pink-500/30 text-pink-300 hover:bg-pink-500/10 cursor-pointer active:scale-95 transition-all flex items-center gap-1.5"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          {isPreviewMode ? 'Exit Preview' : 'Live Preview'}
-        </button>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {onResetToDefault && (
+            <button
+              onClick={() => {
+                if (window.confirm("Do you want to reset all customized values back to defaults? This will restore the default Polaroid photos and template text.")) {
+                  onResetToDefault();
+                }
+              }}
+              title="Reset configuration to template defaults"
+              className="text-xs px-2.5 py-1.5 rounded-lg font-semibold border border-slate-700 hover:border-pink-500/40 text-slate-400 hover:text-pink-300 hover:bg-pink-500/5 cursor-pointer active:scale-95 transition-all flex items-center gap-1 shrink-0"
+            >
+              Reset
+            </button>
+          )}
+
+          {/* Toggle full screen visualizer preview */}
+          <button
+            onClick={onPreviewToggle}
+            className="text-xs px-3 py-1.5 rounded-lg font-semibold border border-pink-500/30 text-pink-300 hover:bg-pink-500/10 cursor-pointer active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            {isPreviewMode ? 'Exit Preview' : 'Live Preview'}
+          </button>
+        </div>
       </div>
 
       {/* Tabs navigation list */}

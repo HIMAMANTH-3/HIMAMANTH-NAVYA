@@ -78,22 +78,22 @@ Thank you for being the amazing friend you are. No matter what happens, you'll a
   gallery: [
     {
       id: 'g-1',
-      url: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800&auto=format&fit=crop',
+      url: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop',
       caption: 'Navya\'s Traditional Grace 🥻✨'
     },
     {
       id: 'g-2',
-      url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop',
+      url: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=800&auto=format&fit=crop',
       caption: 'Cute Heart Crown Vibes 🥰💖'
     },
     {
       id: 'g-3',
-      url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=800&auto=format&fit=crop',
+      url: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop',
       caption: 'Brightest Smiling Moments ☀️☺️'
     },
     {
       id: 'g-4',
-      url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop',
+      url: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=800&auto=format&fit=crop',
       caption: 'Beautiful Dimples & Laughs 💫💙'
     }
   ],
@@ -184,6 +184,11 @@ export default function App() {
     }
   };
 
+  const handleResetToDefault = () => {
+    setData(DEFAULT_CRAFT_PRESET);
+    localStorage.removeItem('romantic_surprise_draft');
+  };
+
   // Custom cursor movement listener (desktop only)
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -263,6 +268,7 @@ export default function App() {
           onChange={handleDataChange}
           onPreviewToggle={() => setIsPreviewMode(true)}
           isPreviewMode={isPreviewMode}
+          onResetToDefault={handleResetToDefault}
         />
       )}
 
