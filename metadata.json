@@ -1,6 +1,0 @@
-{
-  "name": "Navya Birthday Surprise",
-  "description": "Interactive birthday surprise website builder for Navya.",
-  "requestFramePermissions": ["camera", "microphone", "geolocation"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
