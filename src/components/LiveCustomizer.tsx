@@ -5,6 +5,50 @@ import {
 } from 'lucide-react';
 import { BirthdayWebsiteData, GalleryItem, LoveReason, TimelineItem } from '../types';
 
+// Client-side image compression utility to keep memory compact and URL stable
+function compressImage(file: File, maxWidth = 800, maxHeight = 800, quality = 0.75): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(event.target?.result as string); // fallback
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+}
+
 interface LiveCustomizerProps {
   data: BirthdayWebsiteData;
   onChange: (newData: BirthdayWebsiteData) => void;
@@ -19,6 +63,7 @@ export default function LiveCustomizer({
   isPreviewMode 
 }: LiveCustomizerProps) {
   const [activeTab, setActiveTab] = useState<'profile' | 'ai-writer' | 'gallery' | 'timeline' | 'reasons' | 'surprise'>('profile');
+  const [imageLoadingMap, setImageLoadingMap] = useState<Record<string, boolean>>({});
   
   // AI Helper states
   const [aiType, setAiType] = useState<'letter' | 'reasons' | 'poem' | 'timeline'>('letter');
@@ -460,12 +505,42 @@ export default function LiveCustomizer({
                     Polaroid Photo #{idx + 1}
                   </div>
 
+                  {/* Real-time image preview thumbnail so it's instantly visible */}
+                  {item.url && (
+                    <div className="mt-2 text-[10px] font-sans text-slate-400">
+                      <span className="block mb-1 text-slate-550 font-medium">Live Preview:</span>
+                      <div className="h-28 w-full rounded-xl overflow-hidden border border-slate-850 bg-slate-900/50 flex items-center justify-center relative">
+                        {imageLoadingMap[item.id] ? (
+                          <div className="flex flex-col items-center gap-1">
+                            <Loader2 className="w-5 h-5 text-pink-500 animate-spin" />
+                            <span className="text-[9px] font-mono text-pink-300">Compressing photo...</span>
+                          </div>
+                        ) : (
+                          <img
+                            src={item.url}
+                            alt={`Preview #${idx + 1}`}
+                            className="h-full w-full object-cover"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              // If custom URL is broken or blocked, we show a beautiful placeholder
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop";
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-1">
                     <label className="text-[10px] text-slate-450 font-medium font-sans">Direct Image URL</label>
                     <input
                       type="text"
                       value={item.url}
-                      onChange={(e) => handleUpdateGalleryItem(item.id, { url: e.target.value })}
+                      onChange={(e) => {
+                        const trimmedUrl = e.target.value.trim();
+                        handleUpdateGalleryItem(item.id, { url: trimmedUrl });
+                      }}
                       className="w-full bg-slate-900 border border-slate-700/60 rounded-lg px-2 py-1 text-xs text-slate-100 font-mono"
                       placeholder="https://..."
                     />
@@ -478,16 +553,25 @@ export default function LiveCustomizer({
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                              if (typeof reader.result === 'string') {
-                                handleUpdateGalleryItem(item.id, { url: reader.result });
-                              }
-                            };
-                            reader.readAsDataURL(file);
+                            try {
+                              setImageLoadingMap(prev => ({ ...prev, [item.id]: true }));
+                              const compressedBase64 = await compressImage(file);
+                              handleUpdateGalleryItem(item.id, { url: compressedBase64 });
+                            } catch (err) {
+                              console.error("Local photo processing failed:", err);
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                if (typeof reader.result === 'string') {
+                                  handleUpdateGalleryItem(item.id, { url: reader.result });
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            } finally {
+                              setImageLoadingMap(prev => ({ ...prev, [item.id]: false }));
+                            }
                           }
                         }}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -540,6 +624,33 @@ export default function LiveCustomizer({
                     Milestone Event #{idx + 1}
                   </div>
 
+                  {/* Real-time image preview thumbnail so it's instantly visible */}
+                  {item.imageUrl && (
+                    <div className="mt-2 text-[10px] font-sans text-slate-400">
+                      <span className="block mb-1 text-slate-550 font-medium font-sans">Live Preview:</span>
+                      <div className="h-28 w-full rounded-xl overflow-hidden border border-slate-850 bg-slate-900/50 flex items-center justify-center relative">
+                        {imageLoadingMap[item.id] ? (
+                          <div className="flex flex-col items-center gap-1">
+                            <Loader2 className="w-5 h-5 text-pink-500 animate-spin" />
+                            <span className="text-[9px] font-mono text-pink-300 animate-pulse">Compressing photo...</span>
+                          </div>
+                        ) : (
+                          <img
+                            src={item.imageUrl}
+                            alt={`Preview Event #${idx + 1}`}
+                            className="h-full w-full object-cover"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              // Elegant fallback for broken custom URL images
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=800&auto=format&fit=crop";
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-1">
                     <label className="text-[10px] text-slate-400">Event Title</label>
                     <input
@@ -566,26 +677,39 @@ export default function LiveCustomizer({
                       <input
                         type="text"
                         value={item.imageUrl}
-                        onChange={(e) => handleUpdateTimelineItem(item.id, { imageUrl: e.target.value })}
+                        onChange={(e) => {
+                          const trimmedUrl = e.target.value.trim();
+                          handleUpdateTimelineItem(item.id, { imageUrl: trimmedUrl });
+                        }}
                         className="w-full bg-slate-900 border border-slate-700/60 rounded-lg px-2 py-1 text-xs text-slate-100 font-mono"
+                        placeholder="https://..."
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] text-pink-300 font-semibold">Or Upload Photo</label>
+                      <label className="text-[10px] text-pink-350 font-semibold">Or Upload Photo</label>
                       <div className="relative border border-dashed border-slate-700 hover:border-pink-500/50 rounded-lg p-1 text-center transition-colors bg-black/40 h-[28px] flex items-center justify-center">
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = () => {
-                                if (typeof reader.result === 'string') {
-                                  handleUpdateTimelineItem(item.id, { imageUrl: reader.result });
-                                }
-                              };
-                              reader.readAsDataURL(file);
+                              try {
+                                setImageLoadingMap(prev => ({ ...prev, [item.id]: true }));
+                                const compressedBase64 = await compressImage(file);
+                                handleUpdateTimelineItem(item.id, { imageUrl: compressedBase64 });
+                              } catch (err) {
+                                console.error("Local timeline photo processing failed:", err);
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                  if (typeof reader.result === 'string') {
+                                    handleUpdateTimelineItem(item.id, { imageUrl: reader.result });
+                                  }
+                                };
+                                reader.readAsDataURL(file);
+                              } finally {
+                                setImageLoadingMap(prev => ({ ...prev, [item.id]: false }));
+                              }
                             }
                           }}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"

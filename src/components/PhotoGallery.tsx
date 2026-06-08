@@ -55,6 +55,10 @@ export default function PhotoGallery({ gallery }: PhotoGalleryProps) {
                   alt={item.caption || "Special memory"}
                   className="w-full h-full object-cover grayscale-[10%] hover:grayscale-0 transition-all duration-500"
                   referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop";
+                  }}
                 />
                 <div className="absolute inset-0 bg-pink-500/5 hover:bg-transparent transition-colors pointer-events-none" />
                 <div className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full opacity-0 hover:opacity-100 transition-opacity">
@@ -102,6 +106,10 @@ export default function PhotoGallery({ gallery }: PhotoGalleryProps) {
               alt={gallery[activePhotoIdx].caption}
               className="max-h-[68vh] md:max-h-[72vh] max-w-full object-contain rounded-2xl"
               referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop";
+              }}
             />
             
             {/* Caption container */}
