@@ -1,6 +1,6 @@
 {
   "name": "Navya Birthday Surprise",
-  "description": "An interactive surprise website builder for Navya with music, timeline, and countdown.",
-  "requestFramePermissions": [],
+  "description": "Interactive birthday surprise website builder for Navya.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

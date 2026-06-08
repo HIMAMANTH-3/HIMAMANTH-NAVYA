@@ -34,7 +34,10 @@ function getGeminiClient(): GoogleGenAI {
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  let PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  if (isNaN(PORT) || PORT <= 0) {
+    PORT = 3000;
+  }
 
   app.use(express.json());
 
@@ -124,7 +127,11 @@ Respond strictly in JSON format matching this schema:
   if (process.env.NODE_ENV !== 'production') {
     const { createServer } = await import('vite');
     const vite = await createServer({
-      server: { middlewareMode: true },
+      server: { 
+        middlewareMode: true,
+        hmr: process.env.DISABLE_HMR !== 'true',
+        watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);

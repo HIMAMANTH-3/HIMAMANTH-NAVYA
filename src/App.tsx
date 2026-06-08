@@ -110,6 +110,16 @@ export default function App() {
   const [typedLetter, setTypedLetter] = useState('');
   const [typewriterIndex, setTypewriterIndex] = useState(0);
   const [letterVisible, setLetterVisible] = useState(false);
+
+  // Check if we are in the live preview / production shared URL context.
+  // In the shared live preview, we want the designer sidebar and development badges to be completely hidden for a pure presentation.
+  const isLivePreview = typeof window !== 'undefined' && 
+    (window.location.hostname.includes('ais-pre-') || 
+     (!window.location.hostname.includes('ais-dev-') && 
+      !window.location.hostname.includes('localhost') && 
+      !window.location.hostname.includes('127.0.0.1'))) &&
+    !window.location.search.includes('editor=true') &&
+    !window.location.hash.includes('editor');
   
   // Custom Cursor states
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
@@ -246,8 +256,8 @@ export default function App() {
         }}
       />
 
-      {/* 1. LEFT COLUMN: THE REAL-TIME BUILDER INPUT PANELS (Hidden in Shared or Full screen modes) */}
-      {!isSharedGiftMode && !isPreviewMode && (
+      {/* 1. LEFT COLUMN: THE REAL-TIME BUILDER INPUT PANELS (Hidden in Shared, Live, or Full screen modes) */}
+      {!isSharedGiftMode && !isLivePreview && !isPreviewMode && (
         <LiveCustomizer 
           data={data}
           onChange={handleDataChange}
@@ -263,7 +273,7 @@ export default function App() {
         <HeartBackground />
 
         {/* Floating Preview Badge to go back to customizer */}
-        {!isSharedGiftMode && isPreviewMode && (
+        {!isSharedGiftMode && !isLivePreview && isPreviewMode && (
           <div className="fixed top-4 left-4 z-50 animate-bounce">
             <button
               onClick={() => setIsPreviewMode(false)}
